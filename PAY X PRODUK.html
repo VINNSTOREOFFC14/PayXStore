@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlwaysVanco</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: url('https://files.catbox.moe/wkmj6z.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #ccc;
+      font-family: system-ui, sans-serif;
+    }
+    .form-container {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(5px);
+    }
+    .form-box {
+      background: rgba(26, 32, 44, 0.8);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.5);
+      max-width: 28rem;
+      width: 100%;
+      color: #e0e7ff;
+    }
+    .admin-container {
+      background: rgba(26, 32, 44, 0.9);
+      min-height: 100vh;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+    .admin-box {
+      background: rgba(45, 55, 72, 0.9);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.5);
+      max-width: 800px;
+      margin: 0 auto;
+      color: #e0e7ff;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .product-card {
+      background: rgba(26, 32, 44, 0.8);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.5);
+      border-color: rgba(99, 102, 241, 0.6);
+    }
+    .product-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .top-right {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 50;
+    }
+    .hidden { display: none !important; }
+    
+    /* Animasi slideDown custom */
+    .slide-down {
+      animation: slideDown 0.5s ease-out forwards;
+    }
+    
+    .slide-up {
+      animation: slideUp 0.5s ease-out forwards;
+    }
+    
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+    }
+
+    .products-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 40;
+      overflow-y: auto;
+      padding: 2rem 1rem;
+    }
+
+    .products-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(26, 32, 44, 0.95);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .payment-info {
+      background: rgba(45, 55, 72, 0.8);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Halaman Utama -->
+  <div id="mainPage">
+    <!-- Tombol Admin Produk -->
+    <div class="top-right">
+      <button id="adminBtn" class="bg-gray-800 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg shadow">
+        Admin Produk
+      </button>
+    </div>
+
+    <!-- Form container -->
+    <div class="form-container">
+      <div class="form-box">
+        <h1 id="typingTitle" class="text-2xl font-bold text-center text-indigo-400 mb-6"></h1>
+
+        <form action="/name" method="POST" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium">Your Name</label>
+            <input type="text" name="your_name" required
+              class="w-full mt-1 p-2 border border-gray-700 rounded-md bg-gray-800 text-gray-200" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Nominal Pembayaran</label>
+            <input type="number" name="jumlah" required
+              class="w-full mt-1 p-2 border border-gray-700 rounded-md bg-gray-800 text-gray-200" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Metode Pembayaran</label>
+            <select name="metode" id="paymentMethod" class="w-full mt-1 p-2 border border-gray-700 rounded-md bg-gray-800 text-gray-200">
+              <option value="qris">QRIS</option>
+              <option value="dana">DANA</option>
+              <option value="gopay">GoPay</option>
+              <option value="ovo">OVO</option>
+            </select>
+          </div>
+
+          <!-- Informasi Pembayaran -->
+          <div id="paymentInfo" class="payment-info hidden">
+            <div class="flex items-center space-x-2 mb-2">
+              <span id="paymentIcon" class="text-2xl"></span>
+              <span id="paymentTitle" class="font-semibold text-lg"></span>
+            </div>
+            <div class="bg-gray-800 p-3 rounded-md">
+              <p class="text-sm text-gray-300 mb-1">Nomor Pembayaran:</p>
+              <p id="paymentNumber" class="font-mono text-lg font-bold text-green-400"></p>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Silakan transfer ke nomor di atas</p>
+          </div>
+
+          <button type="button" id="showQrisBtn"
+            class="w-full bg-pink-600 hover:bg-pink-700 text-white p-2 rounded-md transition-all duration-300 hidden animate__animated">
+            Tampilkan QRIS Payment
+          </button>
+
+          <button type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-md transition-colors duration-300">
+            Bayar Sekarang
+          </button>
+        </form>
+
+        <!-- Tombol Lihat Produk -->
+        <button id="showProductsBtn"
+          class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-3 rounded-md transition-all duration-300 mt-4 font-semibold shadow-lg">
+          🛍️ Lihat Produk Kami
+        </button>
+
+        <p class="text-xs text-center text-gray-400 mt-6">
+          © 2025 VinzAlwasySolo - Layanan Hosting Termurah
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Produk -->
+  <div id="productsSection" class="products-section hidden">
+    <div class="products-container slide-down">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-indigo-400">🛍️ Produk Kami</h2>
+        <button id="closeProductsBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-300">
+          ✕ Tutup
+        </button>
+      </div>
+      
+      <div id="publicProductList" class="product-grid">
+        <!-- Produk akan ditampilkan di sini -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Halaman Admin Dashboard -->
+  <div id="adminDashboard" class="admin-container hidden">
+    <div class="admin-box">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-indigo-400">Admin Dashboard</h1>
+        <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+          Logout
+        </button>
+      </div>
+
+      <!-- Form Tambah Produk -->
+      <div class="bg-gray-700 p-6 rounded-lg mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-indigo-300">Tambah Produk Baru</h2>
+        <form id="addProductForm" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Nama Produk</label>
+              <input type="text" id="productName" required
+                class="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200" 
+                placeholder="Contoh: Hosting Shared 1GB" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Harga Produk</label>
+              <input type="number" id="productPrice" required
+                class="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200" 
+                placeholder="Contoh: 50000" />
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">URL Gambar Produk</label>
+            <input type="url" id="productImage" required
+              class="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200" 
+              placeholder="https://example.com/image.jpg" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Metode Kontak</label>
+            <select id="contactMethod" class="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200">
+              <option value="">Pilih Metode Kontak</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="dana">DANA</option>
+            </select>
+          </div>
+
+          <!-- Input WhatsApp -->
+          <div id="whatsappInput" class="hidden">
+            <label class="block text-sm font-medium mb-2">Link WhatsApp</label>
+            <input type="text" id="whatsappLink"
+              class="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200" 
+              placeholder="https://wa.me/6281234567890" />
+            <p class="text-xs text-gray-400 mt-1">Format: https://wa.me/62xxxxxxxxxx</p>
+          </div>
+
+          <!-- Input DANA -->
+          <div id="danaInput" class="hidden">
+            <label class="block text-sm font-medium mb-2">Nomor DANA</label>
+            <input type="text" id="danaNumber"
+              class="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-gray-200" 
+              placeholder="6281234567890" />
+            <p class="text-xs text-gray-400 mt-1">Format: 62xxxxxxxxxx (tanpa tanda +)</p>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded-md transition-colors duration-300">
+            Tambah Produk
+          </button>
+        </form>
+      </div>
+
+      <!-- Daftar Produk -->
+      <div>
+        <h2 class="text-xl font-semibold mb-4 text-indigo-300">Daftar Produk</h2>
+        <div id="productList" class="product-grid">
+          <!-- Produk akan ditampilkan di sini -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal QRIS -->
+  <div id="qrisModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div id="qrisContent" class="relative animate__animated animate__zoomIn">
+      <button id="closeQris"
+        class="absolute top-2 right-2 text-white bg-black bg-opacity-40 hover:bg-opacity-70 rounded-full w-8 h-8 flex items-center justify-center z-50 shadow-md">
+        &times;
+      </button>
+      <img src="https://files.catbox.moe/4nw1jd.jpg" alt="QRIS"
+        class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg w-full rounded-xl shadow-2xl" />
+    </div>
+  </div>
+
+  <!-- Modal Login Admin -->
+  <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-gray-900 p-6 rounded-xl shadow-xl max-w-sm w-full animate__animated animate__zoomIn relative">
+      <button id="closeAdminModal" class="absolute top-2 right-2 text-white text-xl">&times;</button>
+      <h2 class="text-xl font-bold text-center mb-4 text-indigo-400">Login Admin</h2>
+      <form id="adminLoginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm">Username</label>
+          <input type="text" id="adminUsername" required
+                 class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white" />
+        </div>
+        <div>
+          <label class="block text-sm">Password</label>
+          <input type="password" id="adminPassword" required
+                 class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white" />
+        </div>
+        <div id="loginError" class="text-red-500 text-sm hidden">Username atau password salah.</div>
+        <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded">
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Data produk (simpan di memori)
+    let products = [
+      {
+        id: 1,
+        name: "RESELLER PANEL",
+        price: 5000,
+        image: "https://files.catbox.moe/frptii.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 2,
+        name: "ADMIN PANEL",
+        price: 7000,
+        image: "https://files.catbox.moe/frptii.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 3,
+        name: "OWN PANEL",
+        price: 10000,
+        image: "https://files.catbox.moe/frptii.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+       id: 4,
+       name: "Panel Pterodactyl", 
+       price: 1-10000, 
+       image: "https://files.catbox.moe/frptii.jpg", 
+       contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 5,
+        name: "SCRIPT SHOP V4",
+        price: 15000,
+        image: "https://files.catbox.moe/d0t284.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 6,
+        name: "SCRIPT SIMPLE V5",
+        price: 5000,
+        image: "https://files.catbox.moe/d0t284.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 7,
+        name: "SCRIPT SIMPLE V6",
+        price: 10000,
+        image: "https://files.catbox.moe/d0t284.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 8,
+        name: "SCRIPT SIMPLE V7",
+        price: 12000,
+        image: "https://files.catbox.moe/d0t284.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 9,
+        name: "NOKOS ALL NEGARA",
+        price: 99999,
+        image: "https://files.catbox.moe/683hj6.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      },
+      {
+        id: 10,
+        name: "ALL SCRIPT",
+        price: 99999,
+        image: "https://files.catbox.moe/d0t284.jpg",
+        contactMethod: "whatsapp",
+        whatsappLink: "https://wa.me/6289521456041"
+      }
+     ];
+      
+    // Data nomor pembayaran
+    const paymentNumbers = {
+      dana: "089521456041",
+      gopay: "089521456041", 
+      ovo: "089521456041"
+    };
+
+    const paymentIcons = {
+      dana: "💳",
+      gopay: "🟢", 
+      ovo: "🟣"
+    };
+
+    const paymentTitles = {
+      dana: "DANA",
+      gopay: "GoPay",
+      ovo: "OVO"
+    };
+
+    // Animasi ketik judul
+    const typingElement = document.getElementById('typingTitle');
+    const typingText = '🚀 VinzAlwasySolo';
+    let index = 0;
+
+    function typeNextLetter() {
+      if (index < typingText.length) {
+        typingElement.textContent += typingText.charAt(index);
+        index++;
+        setTimeout(typeNextLetter, 150);
+      }
+    }
+
+    // Tombol dan modal QRIS
+    const showQrisBtn = document.getElementById('showQrisBtn');
+    const qrisModal = document.getElementById('qrisModal');
+    const qrisContent = document.getElementById('qrisContent');
+    const closeQris = document.getElementById('closeQris');
+
+    showQrisBtn.addEventListener('click', () => {
+      qrisContent.classList.remove('animate__fadeOutUp');
+      qrisContent.classList.remove('animate__zoomOut');
+      qrisContent.classList.add('animate__zoomIn');
+      qrisModal.classList.remove('hidden');
+    });
+
+    closeQris.addEventListener('click', () => {
+      qrisContent.classList.remove('animate__zoomIn');
+      qrisContent.classList.add('animate__zoomOut');
+      qrisContent.addEventListener('animationend', () => {
+        qrisModal.classList.add('hidden');
+        qrisContent.classList.remove('animate__zoomOut');
+        qrisContent.classList.add('animate__zoomIn');
+      }, { once: true });
+    });
+
+    qrisModal.addEventListener('click', (e) => {
+      if (e.target === qrisModal) {
+        closeQris.click();
+      }
+    });
+
+    // Payment method logic
+    const paymentMethodSelect = document.getElementById('paymentMethod');
+    const paymentInfo = document.getElementById('paymentInfo');
+    const paymentIcon = document.getElementById('paymentIcon');
+    const paymentTitle = document.getElementById('paymentTitle');
+    const paymentNumber = document.getElementById('paymentNumber');
+
+    function updatePaymentDisplay() {
+      const selectedMethod = paymentMethodSelect.value;
+      
+      // Hide/show QRIS button
+      if (selectedMethod === 'qris') {
+        showQrisBtn.classList.remove('hidden');
+        showQrisBtn.classList.add('animate__fadeInDown');
+        paymentInfo.classList.add('hidden');
+      } else {
+        showQrisBtn.classList.add('hidden');
+        showQrisBtn.classList.remove('animate__fadeInDown');
+        
+        // Show payment info for DANA, GoPay, OVO
+        if (paymentNumbers[selectedMethod]) {
+          paymentIcon.textContent = paymentIcons[selectedMethod];
+          paymentTitle.textContent = paymentTitles[selectedMethod];
+          paymentNumber.textContent = paymentNumbers[selectedMethod];
+          paymentInfo.classList.remove('hidden');
+        } else {
+          paymentInfo.classList.add('hidden');
+        }
+      }
+    }
+
+    paymentMethodSelect.addEventListener('change', updatePaymentDisplay);
+
+    // Produk Section Logic
+    const showProductsBtn = document.getElementById('showProductsBtn');
+    const productsSection = document.getElementById('productsSection');
+    const closeProductsBtn = document.getElementById('closeProductsBtn');
+    const publicProductList = document.getElementById('publicProductList');
+
+    showProductsBtn.addEventListener('click', () => {
+      productsSection.classList.remove('hidden');
+      renderPublicProducts();
+    });
+
+    closeProductsBtn.addEventListener('click', () => {
+      const container = document.querySelector('.products-container');
+      container.classList.remove('slide-down');
+      container.classList.add('slide-up');
+      setTimeout(() => {
+        productsSection.classList.add('hidden');
+        container.classList.remove('slide-up');
+        container.classList.add('slide-down');
+      }, 500);
+    });
+
+    // Render produk untuk public
+    function renderPublicProducts() {
+      publicProductList.innerHTML = '';
+      
+      if (products.length === 0) {
+        publicProductList.innerHTML = '<p class="text-gray-400 text-center col-span-full text-lg">Belum ada produk yang tersedia saat ini.</p>';
+        return;
+      }
+
+      products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card animate__animated animate__fadeInUp';
+        
+        const formatPrice = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(product.price);
+
+        const contactButton = product.contactMethod === 'whatsapp' 
+          ? `<a href="${product.whatsappLink}" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg text-center inline-block transition-colors duration-300">
+               💬 Hubungi via WhatsApp
+             </a>`
+          : `<button onclick="contactViaDana('${product.danaNumber}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors duration-300">
+               🪀 Hubungi via WhatsApp
+             </button>`;
+
+        productCard.innerHTML = `
+          <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/280x180/6366F1/FFFFFF?text=Gambar+Tidak+Ditemukan'">
+          <h3 class="font-bold text-xl mb-2 text-white">${product.name}</h3>
+          <p class="text-indigo-300 font-bold text-lg mb-3">${formatPrice}</p>
+          ${contactButton}
+        `;
+        
+        publicProductList.appendChild(productCard);
+      });
+    }
+
+    // Fungsi kontak DANA
+    function contactViaDana(danaNumber) {
+      alert(`Silakan hubungi nomor DANA: ${danaNumber}`);
+    }
+
+    // Admin login logic
+    const adminBtn = document.getElementById('adminBtn');
+    const adminModal = document.getElementById('adminModal');
+    const closeAdminModal = document.getElementById('closeAdminModal');
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const loginError = document.getElementById('loginError');
+    const mainPage = document.getElementById('mainPage');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    adminBtn.addEventListener('click', () => {
+      adminModal.classList.remove('hidden');
+    });
+
+    closeAdminModal.addEventListener('click', () => {
+      adminModal.classList.add('hidden');
+      loginError.classList.add('hidden');
+      adminLoginForm.reset();
+    });
+
+    adminLoginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
+
+      if (username === 'VinzAlwasy' && password === 'admin') {
+        adminModal.classList.add('hidden');
+        mainPage.classList.add('hidden');
+        productsSection.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        renderProducts();
+      } else {
+        loginError.classList.remove('hidden');
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      adminDashboard.classList.add('hidden');
+      mainPage.classList.remove('hidden');
+      adminLoginForm.reset();
+      loginError.classList.add('hidden');
+    });
+
+    // Admin product management
+    const addProductForm = document.getElementById('addProductForm');
+    const contactMethodSelect = document.getElementById('contactMethod');
+    const whatsappInput = document.getElementById('whatsappInput');
+    const danaInput = document.getElementById('danaInput');
+    const productList = document.getElementById('productList');
+
+    // Toggle input berdasarkan metode kontak
+    contactMethodSelect.addEventListener('change', (e) => {
+      whatsappInput.classList.add('hidden');
+      danaInput.classList.add('hidden');
+      
+      if (e.target.value === 'whatsapp') {
+        whatsappInput.classList.remove('hidden');
+      } else if (e.target.value === 'dana') {
+        danaInput.classList.remove('hidden');
+      }
+    });
+
+    // Tambah produk
+    addProductForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('productName').value.trim();
+      const price = document.getElementById('productPrice').value.trim();
+      const image = document.getElementById('productImage').value.trim();
+      const contactMethod = document.getElementById('contactMethod').value;
+      const whatsappLink = document.getElementById('whatsappLink').value.trim();
+      const danaNumber = document.getElementById('danaNumber').value.trim();
+
+      if (!name || !price || !image || !contactMethod) {
+        alert('Semua field harus diisi!');
+        return;
+      }
+
+      if (contactMethod === 'whatsapp' && !whatsappLink) {
+        alert('Link WhatsApp harus diisi!');
+        return;
+      }
+
+      if (contactMethod === 'dana' && !danaNumber) {
+        alert('Nomor DANA harus diisi!');
+        return;
+      }
+
+      const product = {
+        id: Date.now(),
+        name,
+        price: parseInt(price),
+        image,
+        contactMethod,
+        whatsappLink: contactMethod === 'whatsapp' ? whatsappLink : null,
+        danaNumber: contactMethod === 'dana' ? danaNumber : null
+      };
+
+      products.push(product);
+      renderProducts();
+      addProductForm.reset();
+      whatsappInput.classList.add('hidden');
+      danaInput.classList.add('hidden');
+      
+      alert('Produk berhasil ditambahkan!');
+    });
+
+    // Render produk admin
+    function renderProducts() {
+      productList.innerHTML = '';
+      
+      if (products.length === 0) {
+        productList.innerHTML = '<p class="text-gray-400 text-center col-span-full">Belum ada produk yang ditambahkan.</p>';
+        return;
+      }
+
+      products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        
+        const formatPrice = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR'
+        }).format(product.price);
+
+        const contactInfo = product.contactMethod === 'whatsapp' 
+          ? `WhatsApp: ${product.whatsappLink}`
+          : `DANA: ${product.danaNumber}`;
+
+        productCard.innerHTML = `
+          <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/280x180/6366F1/FFFFFF?text=Gambar+Tidak+Ditemukan'">
+          <h3 class="font-semibold text-lg mb-2">${product.name}</h3>
+          <p class="text-indigo-300 font-bold mb-2">${formatPrice}</p>
+          <p class="text-sm text-gray-400 mb-3">${contactInfo}</p>
+          <button onclick="deleteProduct(${product.id})" class="w-full bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded text-sm">
+            Hapus Produk
+          </button>
+        `;
+        
+        productList.appendChild(productCard);
+      });
+    }
+
+    // Hapus produk
+    function deleteProduct(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+        products = products.filter(product => product.id !== id);
+        renderProducts();
+      }
+    }
+
+    // Inisialisasi
+    window.addEventListener('DOMContentLoaded', () => {
+      typeNextLetter();
+      updatePaymentDisplay();
+      renderProducts();
+    });
+  </script>
+</body>
+</html>
